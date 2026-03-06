@@ -1,210 +1,83 @@
 package com.martinezmath.gestionpp3.modelo;
 
-
-
-
-import java.text.SimpleDateFormat;
+import jakarta.persistence.*;
 import java.time.LocalDate;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 
-/**
- *
- * @author Matyas
- */
+@Entity
+@Table(name = "servicio")
 public class Servicio {
 
-    private IntegerProperty idservicio;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idservicio")
+    private Integer idServicio;
 
+    @Column(name = "fecha", nullable = false)
     private LocalDate fechaServicio;
+
+    @Column(name = "fechaRecibido")
     private LocalDate fechaServicioRec;
 
-    private StringProperty detalle;
-    private StringProperty costo;
-    private StringProperty numFactura;
-    private StringProperty tipoProducto;
-    private IntegerProperty idEstado;
-    private IntegerProperty idCliente;
-    private IntegerProperty idUsuario;
+    @Column(name = "detalle", columnDefinition = "TEXT")
+    private String detalle;
 
+    @Column(name = "costo")
+    private String costo;
+
+    @Column(name = "numFactura")
+    private String numFactura;
+
+    @Column(name = "tipoProducto")
+    private String tipoProducto;
+
+    @Column(name = "baja")
+    private Integer baja = 0;
+
+    // --- RELACIONES MÁGICAS DE HIBERNATE ---
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "idTipoServicio", referencedColumnName = "idtipoServicio")
     private TipoServicio tipoServicio;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "idEstado", referencedColumnName = "idestado")
     private Estado estado;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "idCliente", referencedColumnName = "idcliente")
     private Cliente cliente;
 
-    public Servicio() {
-    }
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "idUsuario", referencedColumnName = "idusuario")
+    private Usuario usuario; // El técnico que tomó el equipo
 
-    public Servicio(int idservicio, LocalDate fecha, LocalDate fechaRecibido,
-            String detalle, String costo, String numFactura, String tipoProducto,
-            TipoServicio ts, Estado estado, Cliente cliente) {
-        this.idservicio = new SimpleIntegerProperty(idservicio);
-        this.fechaServicio = fecha;
-        this.fechaServicioRec = fechaRecibido;
-        this.detalle = new SimpleStringProperty(detalle);
-        this.costo = new SimpleStringProperty(costo);
-        this.numFactura = new SimpleStringProperty(numFactura);
-        this.tipoProducto = new SimpleStringProperty(tipoProducto);
-        this.tipoServicio = ts;
-        this.estado = estado;
-        this.cliente = cliente;
-    }
+    public Servicio() {}
 
-    //Metodos atributo: idservicio
-    public int getIdservicio() {
-        return idservicio.get();
-    }
-
-    public void setIdservicio(int idservicio) {
-        this.idservicio = new SimpleIntegerProperty(idservicio);
-    }
-
-    public IntegerProperty IdservicioProperty() {
-        return idservicio;
-    }
-
-    //Metodos atributo: fechaServicio
-    public LocalDate getFechaServicio() {
-        return fechaServicio;
-    }
-
-    public void setFechaServicio(LocalDate fechaServicio) {
-        this.fechaServicio = fechaServicio;
-    }
-
-    //Metodos atributo: fechaServicioRecibido
-    public LocalDate getFechaServicioRec() {
-        return fechaServicioRec;
-    }
-
-    public void setFechaServicioRec(LocalDate fechaServicioRec) {
-        this.fechaServicioRec = fechaServicioRec;
-    }
-
-    //Metodos atributo: detalle
-    public String getDetalle() {
-        return detalle.get();
-    }
-
-    public void setDetalle(String detalle) {
-        this.detalle = new SimpleStringProperty(detalle);
-    }
-
-    public StringProperty DetalleProperty() {
-        return detalle;
-    }
-    //Metodos atributo: costo
-
-    public String getCosto() {
-        return costo.get();
-    }
-
-    public void setCosto(String costo) {
-        this.costo = new SimpleStringProperty(costo);
-    }
-
-    public StringProperty CostoProperty() {
-        return costo;
-    }
-    //Metodos atributo: numFactura
-
-    public String getNumFactura() {
-        return numFactura.get();
-    }
-
-    public void setNumFactura(String numFactura) {
-        this.numFactura = new SimpleStringProperty(numFactura);
-    }
-
-    public StringProperty NumFacturaProperty() {
-        return numFactura;
-    }
-
-    //Metodos atributo: tipoProducto
-    public String getTipoProducto() {
-        return tipoProducto.get();
-    }
-
-    public void setTipoProducto(String tipoProducto) {
-        this.tipoProducto = new SimpleStringProperty(tipoProducto);
-    }
-
-    public StringProperty TipoProduct0Property() {
-        return tipoProducto;
-    }
-
-    //Metodos atributo: idEstado
-    public int getIdEstado() {
-        return idEstado.get();
-    }
-
-    public void setIdEstado(int idEstado) {
-        this.idEstado = new SimpleIntegerProperty(idEstado);
-    }
-
-    public IntegerProperty IdEstadoProperty() {
-        return idEstado;
-    }
-    //Metodos atributo: idCliente
-
-    public int getIdCliente() {
-        return idCliente.get();
-    }
-
-    public void setIdCliente(int idCliente) {
-        this.idCliente = new SimpleIntegerProperty(idCliente);
-    }
-
-    public IntegerProperty IdClienteProperty() {
-        return idCliente;
-    }
-    //Metodos atributo: idUsuario
-
-    public int getIdUsuario() {
-        return idUsuario.get();
-    }
-
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = new SimpleIntegerProperty(idUsuario);
-    }
-
-    public IntegerProperty IdUsuarioProperty() {
-        return idUsuario;
-    }
-
-    public Estado getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Estado estado) {
-        this.estado = estado;
-    }
-
-    public TipoServicio getTipoServicio() {
-        return tipoServicio;
-    }
-
-    public void setTipoServicio(TipoServicio tipoServicio) {
-        this.tipoServicio = tipoServicio;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    @Override
-    public String toString() {
-        return idservicio
-                + ", " + fechaServicio + " " + detalle + ", costo=" + costo + "tipoProd:" + tipoProducto + " , "
-                + estado.getDescripcion() + cliente.getIdCliente()
-                + ", idUsuario=" + idUsuario
-                + tipoServicio.getDescripcion()
-                + cliente.getIdCliente() + " " + cliente.getDni() + cliente.getApellido();
-    }
-
+    // Getters y Setters
+    public Integer getIdServicio() { return idServicio; }
+    public void setIdServicio(Integer idServicio) { this.idServicio = idServicio; }
+    public LocalDate getFechaServicio() { return fechaServicio; }
+    public void setFechaServicio(LocalDate fechaServicio) { this.fechaServicio = fechaServicio; }
+    public LocalDate getFechaServicioRec() { return fechaServicioRec; }
+    public void setFechaServicioRec(LocalDate fechaServicioRec) { this.fechaServicioRec = fechaServicioRec; }
+    public String getDetalle() { return detalle; }
+    public void setDetalle(String detalle) { this.detalle = detalle; }
+    public String getCosto() { return costo; }
+    public void setCosto(String costo) { this.costo = costo; }
+    public String getNumFactura() { return numFactura; }
+    public void setNumFactura(String numFactura) { this.numFactura = numFactura; }
+    public String getTipoProducto() { return tipoProducto; }
+    public void setTipoProducto(String tipoProducto) { this.tipoProducto = tipoProducto; }
+    public Integer getBaja() { return baja; }
+    public void setBaja(Integer baja) { this.baja = baja; }
+    
+    // Getters y Setters de los Objetos
+    public TipoServicio getTipoServicio() { return tipoServicio; }
+    public void setTipoServicio(TipoServicio tipoServicio) { this.tipoServicio = tipoServicio; }
+    public Estado getEstado() { return estado; }
+    public void setEstado(Estado estado) { this.estado = estado; }
+    public Cliente getCliente() { return cliente; }
+    public void setCliente(Cliente cliente) { this.cliente = cliente; }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 }
