@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane id="AnchorPane" fx:id="usuarios" prefHeight="583.0" prefWidth="522.0" styleClass="fondo_principal" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pp3.st.vistas.ModalUsuariosController">
+<AnchorPane id="AnchorPane" fx:id="usuarios" prefHeight="583.0" prefWidth="522.0" styleClass="fondo_principal" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.martinezmath.gestionpp3.vistas.ModalUsuariosController">
    <children>
       <GridPane layoutX="59.0" layoutY="380.0" prefHeight="138.0" prefWidth="356.0">
         <columnConstraints>

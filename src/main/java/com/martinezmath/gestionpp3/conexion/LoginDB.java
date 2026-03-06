@@ -19,48 +19,63 @@ import com.martinezmath.gestionpp3.modelo.Usuario;
 public class LoginDB {
 
     //recibe y verifica si es login correcto, login traido del controlador login, los cuales son obtenidos de los txtFields
-    public boolean validarLoginDB(Usuario usuario) {
+   public boolean validarLoginDB(Usuario usuario) {
 
-        String username = usuario.getUsername();
-        String password = usuario.getPassword();
+        String username = usuario.getUsername().trim();
+        String password = usuario.getPassword().trim();
 
-        System.out.println("Username traido: " + username + "\n");
-        System.out.println("Password sin cifrar: " + usuario.getPassword());
-        System.out.println("Password cifrado: " + password);
+        System.out.println("Username traido: " + username);
+        System.out.println("Password cifrado a comparar: " + password);
 
-        String query = "SELECT username, password, baja FROM usuario WHERE baja = 0 AND username =?";
-        JdbcHelper2 jdbc = new JdbcHelper2();
+        // Usamos la tabla usuario y filtramos por username y baja=0 directamente en SQL
+        String query = "SELECT username, password, baja FROM usuario WHERE username = ? AND baja = 0";
+        
         ResultSet rs = null;
+        PreparedStatement statement = null;
+        
         try {
-            PreparedStatement statement = jdbc.getConnection().prepareStatement(query);
-            statement.setString(1, usuario.getUsername());
+            // Obtenemos la conexión directamente de tu clase Conexion centralizada
+            statement = Conexion.getConnection().prepareStatement(query);
+            statement.setString(1, username);
             rs = statement.executeQuery();
 
-            while (rs.next()) {
-                username = rs.getString("username");
-                password = rs.getString("password");
-                boolean baja = rs.getBoolean("baja");
-                System.out.println("valor username: " + username);
-                System.out.println("valor password: " + password);
-                if (username.equalsIgnoreCase(usuario.getUsername().trim())
-                        && password.equals(usuario.getPassword().trim())) {
+            // Usamos if(rs.next()) porque el username es UNIQUE, solo esperamos 1 o 0 resultados
+            if (rs.next()) {
+                String dbUsername = rs.getString("username");
+                String dbPassword = rs.getString("password");
+                
+                System.out.println("Valor username en DB: " + dbUsername);
+                System.out.println("Valor password en DB: " + dbPassword);
+                
+                // Comparamos lo que ingresó el usuario con lo que hay en la base de datos
+                if (dbUsername.equalsIgnoreCase(username) && dbPassword.equals(password)) {
                     System.out.println("Correcto validar login");
                     return true;
                 } else {
-                    System.out.println("Login incorrecto");
+                    System.out.println("Login incorrecto: La contraseña no coincide");
                     return false;
                 }
 
+            } else {
+                System.out.println("Login incorrecto: El usuario no existe o está dado de baja");
             }
+            
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al buscar logins: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            // Imprime la traza completa en rojo en la consola (Outputs) de NetBeans
+            ex.printStackTrace(); 
+            JOptionPane.showMessageDialog(null, "Error SQL al conectar: " + ex.getMessage(), "Error BD", JOptionPane.ERROR_MESSAGE);
         } finally {
-            jdbc.closeResultSet(rs);
-            jdbc.closeConnection();
+            // Buenas prácticas: cerramos los recursos para no saturar MySQL
+            try {
+                if (rs != null) rs.close();
+                if (statement != null) statement.close();
+                Conexion.cierraConexion();
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            }
         }
 
         return false;
-
     }
 
     public boolean insertarLogin(Login l) {

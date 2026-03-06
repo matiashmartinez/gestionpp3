@@ -3,79 +3,50 @@ package com.martinezmath.gestionpp3.conexion;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import com.martinezmath.gestionpp3.utils.ConfigReader;
 
-
-// Asegúrate de importar tu ConfigReader
-
-
-/**
- *
- * @author Mati
- */
 public class Conexion {
 
-    // Usando el método directo que creamos en ConfigReader
-    private String url = ConfigReader.getProperty("db.url");
-    private String username = ConfigReader.getProperty("db.username");
-    private String password = ConfigReader.getProperty("db.password");
+    private static Connection connection = null;
 
-    public static Connection connection = null;
-
-    public Conexion() {
-    }
-
-    public Connection conectar() {
+    // Patrón Singleton: Si la conexión no existe, la crea. Si ya existe, te la devuelve.
+    public static Connection getConnection() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            try {
-                connection = DriverManager.getConnection(this.url, this.username, this.password);
-            } catch (SQLException ex) {
-                System.getLogger(Conexion.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            if (connection == null || connection.isClosed()) {
+                String url = ConfigReader.getProperty("db.url");
+                String username = ConfigReader.getProperty("db.username");
+                String password = ConfigReader.getProperty("db.password");
+
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                connection = DriverManager.getConnection(url, username, password);
+                System.out.println("¡Conexión a BD exitosa!");
             }
-            return connection;
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.err.println("Error al conectar con la Base de Datos: " + ex.getMessage());
+            ex.printStackTrace();
             
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
-            
-            // Usamos Platform.runLater por si la conexión se llama desde un hilo secundario
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error de Base de Datos");
-                alert.setHeaderText("Fallo al conectar con el servidor");
-                alert.setContentText("Asegúrese de que el servidor MySQL esté encendido.\nError: " + ex.getMessage());
+                alert.setHeaderText("Fallo al conectar con el servidor MySQL");
+                alert.setContentText("Detalle: " + ex.getMessage());
                 alert.showAndWait();
             });
-            
-            // ELIMINADO el connection.close() aquí porque connection es nulo si falla.
-            return null;
         }
+        return connection;
     }
 
     public static void cierraConexion() {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                System.out.println("Conexion cerrada");
+                connection = null; // Reseteamos la variable
+                System.out.println("Conexión cerrada.");
             }
-        } catch (SQLException sqle) {
-            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, sqle);
+        } catch (SQLException ex) {
+            System.err.println("Error al cerrar conexión: " + ex.getMessage());
         }
     }
-
-    // Getters y Setters
-    public String getUrl() { return url; }
-    public void setUrl(String url) { this.url = url; }
-    
-    public String getUsername() { return username; }
-    public void setUser(String user) { this.username = user; }
-    
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    
-    public static Connection getConnection() { return connection; }
 }

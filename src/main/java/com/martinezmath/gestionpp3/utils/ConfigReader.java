@@ -16,7 +16,7 @@ public class ConfigReader {
     // El bloque 'static' carga el archivo automáticamente la primera vez que usas la clase
     static {
         // getResourceAsStream lee directamente desde la carpeta target/classes de Maven
-        try (InputStream inputStream = ConfigReader.class.getResourceAsStream("/utils/config.properties")) {
+     try (InputStream inputStream = ConfigReader.class.getResourceAsStream("/com/martinezmath/gestionpp3/utils/config.properties"))  {
             if (inputStream != null) {
                 properties.load(inputStream);
             } else {

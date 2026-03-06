@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.Group?>
@@ -29,7 +28,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="640.0" prefWidth="1192.0" style="-fx-font-size: 13;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pp3.st.vistas.GestionController">
+<AnchorPane prefHeight="640.0" prefWidth="1192.0" style="-fx-font-size: 13;" stylesheets="@../recursos/styles/nuevo1.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.martinezmath.gestionpp3.vistas.GestionController">
    <children>
       <SplitPane dividerPositions="0.5466666666666666" layoutX="194.0" layoutY="113.0" orientation="VERTICAL" prefHeight="400.0" prefWidth="1200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
@@ -518,8 +517,4 @@
         </items>
       </SplitPane>
    </children>
-   <stylesheets>
-      <URL value="@../recursos/styles/nuevo1.css" />
-      <URL value="@../recursos/styles/LoginStyle.css" />
-   </stylesheets>
 </AnchorPane>
