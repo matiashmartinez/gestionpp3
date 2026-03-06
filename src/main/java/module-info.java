@@ -15,6 +15,8 @@ module com.martinezmath.gestionpp {
     opens com.martinezmath.gestionpp3 to javafx.fxml;
     opens com.martinezmath.gestionpp3.vistas to javafx.fxml;
     opens com.martinezmath.gestionpp3.utils to javafx.fxml;
+    opens com.martinezmath.gestionpp3.modelo to javafx.base, javafx.fxml;
+  
 
     // Exporta el paquete principal para que la JVM pueda lanzar la App
     exports com.martinezmath.gestionpp3;
