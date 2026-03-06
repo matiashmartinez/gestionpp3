@@ -21,5 +21,6 @@ module com.martinezmath.gestionpp {
     // Exporta el paquete principal para que la JVM pueda lanzar la App
     exports com.martinezmath.gestionpp3;
     requires javafx.webEmpty;
+    requires jakarta.persistence;
     
 }
