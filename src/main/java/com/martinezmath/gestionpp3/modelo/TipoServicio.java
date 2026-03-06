@@ -1,71 +1,36 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.martinezmath.gestionpp3.modelo;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import jakarta.persistence.*;
 
-/**
- *
- * @author Matyas
- */
+@Entity
+@Table(name = "tiposervicio")
 public class TipoServicio {
 
-    private IntegerProperty idTipoServicio;
-    private StringProperty descripcion;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idtipoServicio")
+    private Integer idTipoServicio;
 
-    public TipoServicio() {
-    }
-    
-    
-    
+    @Column(name = "descripcion")
+    private String descripcion;
 
-    public TipoServicio(int idTipoServicio, String descripcion) {
-        this.idTipoServicio = new SimpleIntegerProperty(idTipoServicio);
-        this.descripcion = new SimpleStringProperty(descripcion);
-    }
+    @Column(name = "baja")
+    private Integer baja = 0;
 
-    public TipoServicio(String tsDescripcion) {
-        this.descripcion = new SimpleStringProperty(tsDescripcion);
-    }
+    public TipoServicio() {}
 
-    //Metodos atributo: idTipoServicio
-    public int getIdTipoServicio() {
-        return idTipoServicio.get();
+    public TipoServicio(String descripcion) {
+        this.descripcion = descripcion;
     }
 
-    public void setIdTipoServicio(int idTipoServicio) {
-        this.idTipoServicio = new SimpleIntegerProperty(idTipoServicio);
-    }
-
-    public IntegerProperty IdTipoServicioProperty() {
-        return idTipoServicio;
-    }
-    //Metodos atributo: descripcion
-
-    public String getDescripcion() {
-        return descripcion.get();
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = new SimpleStringProperty(descripcion);
-    }
-
-    public StringProperty DescripcionProperty() {
-        return descripcion;
-    }
+    // Getters y Setters
+    public Integer getIdTipoServicio() { return idTipoServicio; }
+    public void setIdTipoServicio(Integer idTipoServicio) { this.idTipoServicio = idTipoServicio; }
+    public String getDescripcion() { return descripcion; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public Integer getBaja() { return baja; }
+    public void setBaja(Integer baja) { this.baja = baja; }
 
     @Override
-    public String toString() {
-        return  idTipoServicio.get() + " | " + descripcion.get();
-    }
-
-   
-    
-    
-    
+    public String toString() { return idTipoServicio + " | " + descripcion; }
 }
