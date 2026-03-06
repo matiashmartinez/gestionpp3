@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.effect.MotionBlur?>
@@ -7,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="1192.0" styleClass="scene" stylesheets="@../recursos/styles/css/dashboard.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pp3.st.vistas.DashboardController">
+<AnchorPane id="AnchorPane" prefHeight="640.0" prefWidth="1192.0" styleClass="scene" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.martinezmath.gestionpp3.vistas.DashboardController">
    <children>
       <Pane layoutX="14.0" layoutY="14.0" prefHeight="65.0" prefWidth="746.0" styleClass="title" AnchorPane.bottomAnchor="586.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="331.0" AnchorPane.topAnchor="14.0">
          <children>
@@ -249,4 +250,8 @@
    <effect>
       <MotionBlur radius="1.11" />
    </effect>
+   <stylesheets>
+      <URL value="@../recursos/styles/css/dashboard.css" />
+      <URL value="@../styles/nuevo1.css" />
+   </stylesheets>
 </AnchorPane>

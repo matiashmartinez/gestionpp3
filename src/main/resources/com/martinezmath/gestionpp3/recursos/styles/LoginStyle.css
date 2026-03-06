@@ -7,11 +7,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     Author     : Matyas
 */
 
-.background{
-    -fx-background-image: url("../login/background-login.png");
-    -fx-width: 100%;
-  -fx-height: auto;
+*{
+    -fx-font-family: "Calibri";
+    -fx-font-size: 16px
 }
+
 
 .label{
     -fx-text-fill:white;
@@ -20,3 +20,111 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to ed
     -fx-font-size:14pt;
 }
 
+.button_login{
+    -fx-background-color: #96B946;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-width: 1;
+    -fx-border-color: white;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+
+}
+
+.button_login :hover{
+    -fx-font-weight: bold;
+    -fx-background-color: red;
+    -fx-text-fill: #96B946;
+    -fx-font-size: 16px;
+    -fx-background-radius: 5, 5, 5, 5;
+    -fx-border-width: 1;
+    -fx-border-color: white;
+
+}
+
+
+.label_txtFields{
+    -fx-prompt-text-fill: WHITE;
+    -fx-color-text: white;
+    -fx-highlight-text-fill: white;
+    -fx-text-inner-color: WHITE;
+}
+
+.fondo_principal{
+    -fx-background-size: cover;
+    -fx-background-image: url("../login/4.png");
+    -fx-width: 125%;
+    -fx-height: auto;
+}
+
+
+.fondo_principal2{
+    -fx-background-size: cover;
+    -fx-background-image: url("../login/3.png");
+    -fx-width: 100%;
+    -fx-height: auto;
+}
+
+
+.boton_tabpanel{
+        -fx-background-color: #96B946;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 30;
+    -fx-border-radius: 30;
+    -fx-border-width: 1;
+    -fx-border-color: white;
+    -fx-text-fill: black;
+    -fx-font-size: 16px;
+}
+
+.boton_tabpanel :hover{
+    -fx-font-weight: bold;
+    -fx-background-color: red;
+    -fx-text-fill: #96B946;
+    -fx-font-size: 16px;
+    -fx-background-radius: 5, 5, 5, 5;
+    -fx-border-width: 1;
+    -fx-border-color: white;
+
+}
+
+
+.date-picker-popup > .month-year-pane > .label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+}
+
+.date-cell {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+    -fx-background-color: transparent;
+}
+
+.date-cell:hover {
+    -fx-background-color: #96B946;
+}
+
+.date-cell:disabled {
+    -fx-opacity: 0.3;
+}
+
+.date-picker-popup > .calendar-grid > .calendar-row > .calendar-date {
+    -fx-background-color: transparent;
+}
+
+.date-picker-popup > .calendar-grid > .calendar-row > .calendar-date:hover {
+    -fx-background-color: #96B946;
+}
+
+.date-picker-popup > .calendar-grid > .calendar-row > .calendar-date:selected {
+    -fx-background-color: #96B946;
+    -fx-text-fill: #fff;
+}
+
+.date-picker-popup > .calendar-grid > .calendar-row > .calendar-date:today {
+    -fx-background-color: #ccc;
+    -fx-text-fill: #333;
+}

@@ -1,0 +1,60 @@
+.scene {
+-fx-background-color: linear-gradient(to bottom, #1e1f26, #1c1d22);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 5);
+  
+}
+
+.scene .title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-alignment: center;
+    -fx-padding: 20px;
+}
+
+.scene .subtitle {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 20px 0 10px 0;
+}
+
+.scene .container {
+    -fx-background-color: #282828;
+    -fx-border-color: #4d4d4d;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.2), 5, 0, 2, 2);
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+}
+
+.scene .container .label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.scene .container .value {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+
+}
+
+.scene .button {
+    -fx-background-color: #4d4d4d;
+    -fx-background-radius: 5px;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    
+    -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.2), 5, 0, 2, 2);
+}
+
+.label-cant{
+   -fx-text-fill: #0CFF01;
+    -fx-background-radius: 5px;
+    -fx-font-size: 18px;
+  
+    
+}

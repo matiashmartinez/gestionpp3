@@ -1,0 +1,36 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 10/07/2020, 19:17:28
+    Author     : Mati10
+*/
+
+.fondo{
+    -fx-background-image: url(../recursos/fondo_principal.jpg);
+}
+
+.split-pane:horizontal > .split-pane-divider {
+   -fx-background-color: #00FFE8;
+   -fx-border: 10pt;
+}
+.split-pane:vertical > .split-pane-divider {
+   -fx-background-color: #00FFE8;
+    -fx-prompt-text-fill: WHITE;
+    -fx-color-text: white;
+    -fx-highlight-text-fill: white;
+    -fx-text-inner-color: WHITE;
+}
+
+.label_buscar{
+    -fx-prompt-text-fill: WHITE;
+}
+
+.label_txtFields{
+    -fx-prompt-text-fill: WHITE;
+    -fx-color-text: white;
+    -fx-highlight-text-fill: white;
+    -fx-text-inner-color: WHITE;
+}

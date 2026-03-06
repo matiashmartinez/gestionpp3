@@ -1,0 +1,56 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 26/12/2018, 21:10:58
+    Author     : F
+*/
+
+.table-view {
+    -fx-base: #C0C0C0;
+    -fx-control-inner-background: #C0C0C0;
+    -fx-background-image: url(../recursos/fondo2.jpg);
+    -fx-table-cell-border-color: transparent;
+    -fx-table-header-border-color: transparent;
+    -fx-padding: 3;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-size: 12;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+    -fx-border-color: 
+        transparent
+        transparent
+        derive(-fx-base, 10%) 
+        transparent;
+    -fx-font-weight:bold;
+    -fx-border-insets: 0 10 1 0;
+}
+
+.table-view .column-header .label {
+   -fx-font-size: 9pt; 
+    -fx-text-fill: black;
+    -fx-font-weight:bold;
+    -fx-alignment: center;
+    -fx-opacity: 1;
+}
+
+.table-view:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: -fx-focus-color;
+}
+
+.split-pane:horizontal > .split-pane-divider {
+    -fx-border-color: transparent #C0C0C0 transparent #C0C0C0;
+    -fx-background-color: transparent, derive(#C0C0C0,20%);
+}
+
+.split-pane {
+    -fx-padding: 1 0 0 0;
+}
