@@ -1,107 +1,94 @@
-
 package com.martinezmath.gestionpp3.modelo;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-/**
- *
- * @author Mati
- */
+@Entity
+@Table(name = "usuario") // Le dice a Hibernate: "Esta clase representa la tabla 'usuario'"
 public class Usuario {
 
-    private IntegerProperty idUsuario;
-    private StringProperty username;
-    private StringProperty password;
-    private StringProperty rol;
-    private StringProperty email;
+    @Id // Indica que esta es la Clave Primaria (Primary Key)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Equivale a AUTO_INCREMENT en MySQL
+    @Column(name = "idusuario")
+    private Integer idUsuario;
 
-    public Usuario(int idUsuario, String username, String password,
-            String rol, String email) {
-        this.idUsuario = new SimpleIntegerProperty(idUsuario);
-        this.username = new SimpleStringProperty(username);
-        this.password = new SimpleStringProperty(password);
-        this.rol = new SimpleStringProperty(rol);
-        this.email = new SimpleStringProperty(email);
+    @Column(name = "username", nullable = false)
+    private String username;
 
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "rol")
+    private String rol;
+
+    @Column(name = "baja")
+    private Integer baja = 0; // 0 para activo, 1 para baja lógica
+
+    // 1. Hibernate EXIGE un constructor vacío
+    public Usuario() {
     }
 
+    // 2. Constructor completo (sin id y sin baja, porque los maneja la DB)
+    public Usuario(String username, String password, String rol) {
+        this.username = username;
+        this.password = password;
+        this.rol = rol;
+    }
+
+    // 3. Constructor para el Login
     public Usuario(String username, String password) {
-        this.username = new SimpleStringProperty(username);
-        this.password = new SimpleStringProperty(password);
+        this.username = username;
+        this.password = password;
     }
 
-    //Metodos atributo: idUsuario
-    public int getIdUsuario() {
-        return idUsuario.get();
-    }
+    // --- GETTERS Y SETTERS ESTÁNDAR Puros ---
 
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = new SimpleIntegerProperty(idUsuario);
-    }
-
-    public IntegerProperty IdUsuarioProperty() {
+    public Integer getIdUsuario() {
         return idUsuario;
     }
-    //Metodos atributo: username
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 
     public String getUsername() {
-        return username.get();
+        return username;
     }
 
     public void setUsername(String username) {
-        this.username = new SimpleStringProperty(username);
+        this.username = username;
     }
-
-    public StringProperty UsernameProperty() {
-        return username;
-    }
-    //Metodos atributo: password
 
     public String getPassword() {
-        return password.get();
+        return password;
     }
 
     public void setPassword(String password) {
-        this.password = new SimpleStringProperty(password);
+        this.password = password;
     }
-
-    public StringProperty PasswordProperty() {
-        return password;
-    }
-    //Metodos atributo: rol
 
     public String getRol() {
-        return rol.get();
-    }
-
-    public void setRol(String rol) {
-        this.rol = new SimpleStringProperty(rol);
-    }
-
-    public StringProperty RolProperty() {
         return rol;
     }
 
-    //Metodos atributo: rol
-    public String getEmail() {
-        return email.get();
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 
-    public void setEmail(String email) {
-        this.email = new SimpleStringProperty(email);
+    public Integer getBaja() {
+        return baja;
     }
 
-    public StringProperty EmailProperty() {
-        return email;
+    public void setBaja(Integer baja) {
+        this.baja = baja;
     }
 
     @Override
     public String toString() {
-        return "Usuario{" + "idUsuario=" + idUsuario + ", username=" + username + ", password=" + password
-                + ", rol=" + rol + " ,email= " + email + '}';
+        return "Usuario{" + "idUsuario=" + idUsuario + ", username=" + username + ", rol=" + rol + '}';
     }
-
 }
