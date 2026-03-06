@@ -76,17 +76,16 @@ public class ModalUsuariosController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
         configurarComboTipoU();
         configurarTablas();
+        
         listaU.addAll(udb.buscarTodos());
         System.out.println("listaU: " + listaU.toString());
         tblUsuarios.setItems(listaU);
-
     }
 
     private void checkListaU() {
-        if (udb.buscarTodos() == null) {
+        if (udb.buscarTodos() == null || udb.buscarTodos().isEmpty()) {
             tblUsuarios.setDisable(true);
         }
     }
@@ -95,100 +94,96 @@ public class ModalUsuariosController implements Initializable {
         colIdU.setCellValueFactory(new PropertyValueFactory<Usuario, Integer>("idUsuario"));
         colUsernameU.setCellValueFactory(new PropertyValueFactory<Usuario, String>("username"));
         colTipoU.setCellValueFactory(new PropertyValueFactory<Usuario, String>("rol"));
-         colEmail.setCellValueFactory(new PropertyValueFactory<Usuario, String>("email"));
-
+        
+        // Cuidado aquí: Tu modelo de Usuario no tenía el atributo "email", pero tu tabla sí. 
+        // Si no lo agregaste al modelo antes, esta columna quedará vacía.
+        // colEmail.setCellValueFactory(new PropertyValueFactory<Usuario, String>("email")); 
     }
 
     public void configurarComboTipoU() {
         listaTU.addAll(Arrays.asList("Administrador", "Técnico"));
         cmbTipoU.setItems(listaTU);
-
     }
 
     private Usuario getCamposUsuarios() {
         String username = tfUsername.getText();
-        String email = tfEmailU.getText();
+        // String email = tfEmailU.getText(); // Lo comento porque tu Entidad Usuario actual no tiene email
         String password = Cifrado.md5(tfPasswordU.getText());
         String tipoUsuario = cmbTipoU.getSelectionModel().getSelectedItem();
 
-        Usuario usuario = new Usuario(0,  username, password, tipoUsuario, email);
+        // 1. CAMBIO CLAVE: Usamos el constructor sin ID de Hibernate (le pasamos null o usamos el que tiene 3 parámetros)
+        Usuario usuario = new Usuario(username, password, tipoUsuario);
+        
+        // Si habías agregado email al modelo, sería: new Usuario(null, username, password, tipoUsuario, email);
+
         if (validarCampos(usuario)) {
-            
+            return usuario;
+        } else {
+            return null; // Retornamos nulo si la validación falla
         }
-        return usuario;
     }
 
     //Insertar nuevo usuario
     private boolean insertarUsuarioOk(Usuario u) {
-        if (udb.insertarUsuario(u)) {
+        if (u != null && udb.insertarUsuario(u)) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Atención");
             alert.setHeaderText("Usuario agregado a la base de datos correctamente");
             alert.setContentText("Puede revisarlo en la tabla de usuarios\n");
-
             alert.showAndWait();
+            
             System.out.println("Usuario agregado OK");
             listaU.clear();
             listaU.addAll(udb.buscarTodos());
+            tblUsuarios.setItems(listaU); // Refrescamos la tabla
             return true;
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Atención");
             alert.setHeaderText("No se ha podido insertar el nuevo usuario");
             alert.setContentText("Revise los campos o compruebe la conexion con la base de datos\n");
-
             alert.showAndWait();
-        }
-        return false;
-
-    }
-
-    //VALIDAR SI ES EMAIL VALIDO, SI PASSWORD ESTA NULO Y EL ROL
-    private boolean validarCampos(Usuario u) {
-        if (isEmail(u.getUsername()) && tfPasswordU.getText().length() == 0 && cmbTipoU.getSelectionModel().getSelectedItem() != null) {
-            System.out.println("Datos de formulario correcto");
-            return true;
-
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Atención");
-            alert.setHeaderText("Datos incorrectos ");
-            alert.setContentText("Por favor revise los datos del formulario que sean  correctos\n");
-        }
-        return false;
-    }
-
-    public boolean isEmail(String correo) {
-        Pattern pat = null;
-        Matcher mat = null;
-        pat = Pattern.compile("^[\\w\\-\\_\\+]+(\\.[\\w\\-\\_]+)*@([A-Za-z0-9-]+\\.)+[A-Za-z]{2,4}$");
-        mat = pat.matcher(correo);
-        if (mat.find()) {
-            return true;
-        } else {
             return false;
         }
     }
 
-    public Main getMain() {
-        return main;
+    // VALIDACIÓN CORREGIDA
+    private boolean validarCampos(Usuario u) {
+        // Tu código anterior pedía que el password tuviera longitud 0, lo cual no tiene sentido para crear un usuario.
+        // Y estabas validando el username como si fuera un email.
+        
+        if (!tfUsername.getText().trim().isEmpty() && 
+            tfPasswordU.getText().length() > 0 && 
+            cmbTipoU.getSelectionModel().getSelectedItem() != null) {
+            
+            System.out.println("Datos de formulario correctos");
+            return true;
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Atención");
+            alert.setHeaderText("Datos incompletos");
+            alert.setContentText("Por favor, complete todos los campos (Username, Password y Rol)\n");
+            alert.showAndWait();
+            return false;
+        }
     }
 
-    public void setMain(Main main) {
-        this.main = main;
+    public boolean isEmail(String correo) {
+        Pattern pat = Pattern.compile("^[\\w\\-\\_\\+]+(\\.[\\w\\-\\_]+)*@([A-Za-z0-9-]+\\.)+[A-Za-z]{2,4}$");
+        Matcher mat = pat.matcher(correo);
+        return mat.find();
     }
 
-    public PrincipalController getPc() {
-        return pc;
-    }
-
-    public void setPc(PrincipalController pc) {
-        this.pc = pc;
-    }
+    public Main getMain() { return main; }
+    public void setMain(Main main) { this.main = main; }
+    public PrincipalController getPc() { return pc; }
+    public void setPc(PrincipalController pc) { this.pc = pc; }
 
     @FXML
     private void onInsertarUsuario(ActionEvent event) {
-        insertarUsuarioOk(getCamposUsuarios());
+        Usuario nuevoUsuario = getCamposUsuarios();
+        if(nuevoUsuario != null){
+            insertarUsuarioOk(nuevoUsuario);
+        }
     }
-
 }

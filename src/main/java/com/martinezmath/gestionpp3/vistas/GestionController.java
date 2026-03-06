@@ -34,8 +34,7 @@ import com.martinezmath.gestionpp3.modelo.Cliente;
 import com.martinezmath.gestionpp3.modelo.Estado;
 import com.martinezmath.gestionpp3.modelo.Servicio;
 import com.martinezmath.gestionpp3.modelo.TipoServicio;
-import com.martinezmath.gestionpp3.utils.PDFUtil;
-import java.sql.SQLException;
+//import com.martinezmath.gestionpp3.utils.PDFUtil;
 
 /**
  * FXML Controller class
@@ -100,8 +99,6 @@ public class GestionController implements Initializable {
     private TableColumn<Servicio, Integer> colServicioId;
     @FXML
     private TableColumn<Servicio, LocalDate> colServicioFechaEst;
-//    @FXML
-//    private TableColumn<Servicio, LocalDate> colServicioFechaRec;
     @FXML
     private TableColumn<Servicio, String> colServicioDetalle;
     @FXML
@@ -117,8 +114,6 @@ public class GestionController implements Initializable {
     TipoServicioDB daoTS = new TipoServicioDB();
     ServicioDB daoServicio = new ServicioDB();
 
-    private Integer idSumado;
-    private Integer idServicioSumado;
     private Integer estadoServicio;
 
     @FXML
@@ -138,18 +133,10 @@ public class GestionController implements Initializable {
     @FXML
     private TabPane tabGestion;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-
-        idClienteSumado();
         setLabelIdCliente();
         configurarTablas();
-
-        idServicioSumado();
         setTextFieldIdTipoServicio();
 
         listaTS.setAll(daoTS.buscarTodos());
@@ -158,16 +145,7 @@ public class GestionController implements Initializable {
         cmbTipoProd.setItems(listaProductos);
 
         listeners();
-
         checkReporteAuto.setSelected(false);
-
-    }
-
-    private void checkListaC() {
-        if (dao.buscarTodos() == null) {
-            tablaClientes.setDisable(true);
-            tablaServicios.setDisable(true);
-        }
     }
 
     private void llenarListaTipoProductos() {
@@ -175,26 +153,14 @@ public class GestionController implements Initializable {
         listaProductos.add("PC ");
         listaProductos.add("Notebook");
         listaProductos.add("Otro");
-
-    }
-
-    private void idClienteSumado() {
-        this.idSumado = dao.traerUltimoIdCliente() + 1;
     }
 
     private void setLabelIdCliente() {
-        labelIdCliente.setText(String.valueOf(idSumado));
-    }
-
-    //servicio bd
-    private void idServicioSumado() {
-
-        this.idServicioSumado = daoServicio.traerUltimoIdServicio() + 1;
-        tfIdServicio.setText(this.idServicioSumado.toString());
+        labelIdCliente.setText("Auto");
     }
 
     private void setTextFieldIdTipoServicio() {
-        tfIdServicio.setText(String.valueOf(idServicioSumado));
+        tfIdServicio.setText("Auto");
     }
 
     private void configurarTablas() {
@@ -205,11 +171,12 @@ public class GestionController implements Initializable {
         colTelefono.setCellValueFactory(new PropertyValueFactory<Cliente, String>("telefono"));
         colEmail.setCellValueFactory(new PropertyValueFactory<Cliente, String>("email"));
 
-        colServicioId.setCellValueFactory(new PropertyValueFactory<Servicio, Integer>("idservicio"));
+        colServicioId.setCellValueFactory(new PropertyValueFactory<Servicio, Integer>("idServicio"));
         colServicioDetalle.setCellValueFactory(new PropertyValueFactory<Servicio, String>("detalle"));
         colServicioEstado.setCellValueFactory(new PropertyValueFactory<Servicio, String>("estado"));
         colServicioFechaEst.setCellValueFactory(new PropertyValueFactory<Servicio, LocalDate>("fechaServicio"));
         colServicioFechaRec.setCellValueFactory(new PropertyValueFactory<Servicio, LocalDate>("fechaServicioRec"));
+        
         lista.addAll(dao.buscarTodos());
         tablaClientes.setItems(lista);
     }
@@ -219,35 +186,28 @@ public class GestionController implements Initializable {
         lista.clear();
         lista.addAll(dao.buscarTodos());
         tablaClientes.setItems(lista);
-        // 1. Lista filtrada
-        FilteredList<Cliente> filteredData = new FilteredList<Cliente>(lista, p -> true);
-        // 2. Setear el filtro con el observable.
+        
+        FilteredList<Cliente> filteredData = new FilteredList<>(lista, p -> true);
+        
         tfBuscador.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             filteredData.setPredicate((Cliente cliente) -> {
-                // If filter text is empty, display all persons.
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
 
-                // compara y filtra por apellido y DNI
                 String lowerCaseFilter = newValue.toLowerCase();
-
                 if (cliente.getApellido().toLowerCase().contains(lowerCaseFilter)) {
-                    return true; // Filter matches first name.
+                    return true; 
                 } else if (cliente.getDni().toLowerCase().contains(lowerCaseFilter)) {
-                    return true; // Filter matches last name.
+                    return true; 
                 }
-
-                return false; // Does not match.
+                return false;
             });
         });
-        // 3. Lista ordenada seteada
+        
         SortedList<Cliente> sortedData = new SortedList<>(filteredData);
-        // 4. Bindea la lista y setea la comparacion
         sortedData.comparatorProperty().bind(tablaClientes.comparatorProperty());
-        // 5. Agrega la lista ordenada y filtrada a la tabla clientes
         tablaClientes.setItems(sortedData);
-
     }
 
     public void setMain(Main main) {
@@ -256,30 +216,20 @@ public class GestionController implements Initializable {
 
     @FXML
     private boolean validarInsertarCliente() {
-        if ("".equals(tfDni.getText()) || tfDni.getText().matches("A-Z")) {
+        if ("".equals(tfDni.getText()) || tfDni.getText().matches(".*[a-zA-Z].*")) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Atención");
-            alert.setHeaderText("Falta tipo servicio ");
-            alert.setContentText("Por favor seleccione el tipo de servicio de la nueva solicitud\n");
+            alert.setHeaderText("Falta DNI o es inválido");
+            alert.setContentText("Por favor revise el DNI ingresado.\n");
             return false;
         }
-
         return true;
-
     }
 
-    //Boton Nuevo Cliente
     @FXML
     private void onNuevoCliente(ActionEvent event) {
-
         try {
-
-            String dni = tfDni.getText();
-            Integer idCliente = dao.traerUltimoIdCliente();
-            System.out.println("Número de ID traido de la BD: " + idCliente);
-//
-            if (tfDni.getText() != "" && tfDni.getText().length() == 8) {
-
+            if (!tfDni.getText().isEmpty() && tfDni.getText().length() == 8) {
                 if (nuevoClienteOk()) {
                     System.out.println("Cliente insertado");
                     limpiarCamposNuevoCliente();
@@ -290,48 +240,40 @@ public class GestionController implements Initializable {
                     alert.setContentText("Se ha registrado correctamente un nuevo cliente a la base de datos.\n");
                     alert.showAndWait();
                 }
-
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
-                alert.setHeaderText("No se ha podido registrar  al cliente");
+                alert.setHeaderText("No se ha podido registrar al cliente");
                 alert.setContentText("Datos incorrectos\n");
                 alert.showAndWait();
-                return;
             }
-
         } catch (Exception e) {
-            e.getMessage();
+            e.printStackTrace();
         }
-
     }
 
-    //INSERTA CLIENTE EN BASE DE DATOS  - LLAMADA EN onNuevoCliente() 
     private boolean nuevoClienteOk() {
-        Cliente c = null;
-
-        c = getTextFieldsCliente(false);
-
-        System.out.println("Datos cliente a insertar: \n");
-        c.toString();
+        Cliente c = getTextFieldsCliente(false);
+        System.out.println("Datos cliente a insertar: \n" + c.toString());
         dao.insertarCliente(c);
         lista.clear();
-        idClienteSumado();
-
         return true;
     }
 
-    //INSERTA SERVICIO EN BASE DE DATOS  - LLAMADA EN onNuevoServicio() 
     private boolean nuevoServicioOk() {
         Cliente c = tablaClientes.getSelectionModel().getSelectedItem();
         Servicio s = new Servicio();
-        Estado e = new Estado(1, "Pendiente");
-        PDFUtil pdfUtil = new PDFUtil();
+        
+        // Asignamos el estado inicial (ID 1 = Pendiente en tu DB)
+        Estado e = new Estado();
+        e.setIdEstado(1);
+        
+//        PDFUtil pdfUtil = new PDFUtil();
 
-        if (tablaClientes.getSelectionModel().getSelectedItem() != null) {
+        if (c != null) {
             System.out.println("Datos cliente a insertar:" + c.toString() + "\n");
-
-            s.setIdservicio(Integer.parseInt(tfIdServicio.getText()));
+            
+            // Hibernate asume el ID. No hacemos set de ID.
             s.setTipoServicio(cmbTipo.getValue());
             s.setFechaServicio(dateEstimada.getValue());
             s.setDetalle(txtDetalle.getText());
@@ -342,35 +284,26 @@ public class GestionController implements Initializable {
             s.setEstado(e);
 
             if (checkReporteAuto.isSelected()) {
-
-                pdfUtil.mostrarReporte(s);
+//                pdfUtil.mostrarReporte(s);
             }
             if (daoServicio.insertarServicio(s)) {
-
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Atención");
                 alert.setHeaderText("Se ha registrado una nueva solicitud de servicio técnico");
                 alert.setContentText("Cliente: " + c.getApellido() + " " + c.getNombre());
                 listaServicio.clear();
-                idServicioSumado();
                 tabGestion.getSelectionModel().select(tabPanel3);
-//                tablaClientes.getSelectionModel().select(c);
-//                tablaServicios.getSelectionModel().select(s);
                 limpiarCamposNuevoServicio();
-
                 return true;
             }
-
         }
         return false;
-
     }
 
-    //BOTON EDITAR CLIENTE
     @FXML
     private void onEditarCliente(ActionEvent event) {
         Cliente c;
-        if (tablaClientes.getSelectionModel().getSelectedItem() != null || !validarInsertarCliente()) {
+        if (tablaClientes.getSelectionModel().getSelectedItem() != null) {
             c = tablaClientes.getSelectionModel().getSelectedItem();
             if (editarClienteOk()) {
                 limpiarCamposNuevoCliente();
@@ -385,79 +318,56 @@ public class GestionController implements Initializable {
                 alert.setTitle("Atención");
                 alert.setHeaderText("No se ha podido editar el cliente");
                 alert.setContentText("Posible error en la conexión con la base de datos\n");
-
                 alert.showAndWait();
             }
-        } else if (validarInsertarCliente()) {
+        } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Atención");
             alert.setHeaderText("Ningún cliente seleccionado");
             alert.setContentText("Por favor seleccione un elemento de la lista de clientes\n");
-
             alert.showAndWait();
         }
-
     }
 
-    //CAMBIAR ESTADO DE SERVICIO TECNICO DE PENDIENTE A FINALIZADO O ENTREGADO
     private void onEditarServicioEstado(ActionEvent event) {
-
         if (tablaServicios.getSelectionModel().getSelectedItem() != null) {
-            Servicio s;
-            s = tablaServicios.getSelectionModel().getSelectedItem();
+            Servicio s = tablaServicios.getSelectionModel().getSelectedItem();
             if (editarServicioEstadoOk(s, this.estadoServicio)) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Atención");
-                alert.setHeaderText("Se ha finalizado el servicio técnico seleccionado");
+                alert.setHeaderText("Se ha actualizado el estado del servicio");
                 alert.setContentText("");
-
                 alert.showAndWait();
-                setTablaServicios(null);
+                setTablaServicios(tablaClientes.getSelectionModel().getSelectedItem());
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Atención");
             alert.setHeaderText("Ningún servicio seleccionado");
             alert.setContentText("Por favor seleccione un elemento de la tabla de servicios\n");
-            setTablaServicios(null);
             alert.showAndWait();
         }
-
     }
 
-    //EDITA CLIENTE EN BASE DE DATOS - LLAMADA EN on EditarCliente()
     private boolean editarClienteOk() {
-
         if (dao.editarCliente(getTextFieldsCliente(true))) {
             lista.clear();
-            idClienteSumado();
-
             return true;
-        } else {
-            return false;
         }
-
+        return false;
     }
 
-    //EDITA SERVICIO EN BASE DE DATOS A FINALIZADO- LLAMADA EN on EditarServicioFinalizado()
     private boolean editarServicioEstadoOk(Servicio s, int estado) {
-
         if (daoServicio.editarServicioEstado(s, estado)) {
             listaServicio.clear();
-
             return true;
-        } else {
-            return false;
         }
-
+        return false;
     }
 
-    //DAR BAJA A UN CLIENTE
     @FXML
     private void onEliminarCliente(ActionEvent event) {
-        Cliente c;
         if (tablaClientes.getSelectionModel().getSelectedItem() != null) {
-            c = tablaClientes.getSelectionModel().getSelectedItem();
             if (eliminarClienteOk()) {
                 limpiarCamposNuevoCliente();
                 tablaClientes.setItems(dao.buscarTodos());
@@ -471,7 +381,6 @@ public class GestionController implements Initializable {
                 alert.setTitle("Atención");
                 alert.setHeaderText("No se ha podido dar de baja al cliente");
                 alert.setContentText("Posible error en la conexión con la base de datos\n");
-
                 alert.showAndWait();
             }
         } else {
@@ -479,70 +388,49 @@ public class GestionController implements Initializable {
             alert.setTitle("Atención");
             alert.setHeaderText("Ningún cliente seleccionado");
             alert.setContentText("Por favor seleccione un elemento de la lista de clientes\n");
-
             alert.showAndWait();
         }
     }
 
-    //ELIMINAR CLIENTE EN BASE DE DATOS - LLAMADA EN onEliminarCliente()
     private boolean eliminarClienteOk() {
-
         if (dao.bajaCliente(getTextFieldsCliente(true))) {
             lista.clear();
-            idClienteSumado();
-
             return true;
-        } else {
-            return false;
         }
-
+        return false;
     }
 
     @FXML
     public void limpiarCamposNuevoCliente() {
         setLabelIdCliente();
-        idClienteSumado();
         tfDni.setText("");
         tfApellido.setText("");
         tfNombre.setText("");
         tfTelefono.setText("");
         tfEmail.setText("");
         tablaClientes.refresh();
-        idClienteSumado();
         btNuevoCliente.setDisable(false);
-
     }
 
     public void limpiarCamposNuevoServicio() {
         tfNumRma.setText("");
         txtDetalle.setText("");
         tfCosto.setText("");
-
     }
 
     public Cliente getTextFieldsCliente(boolean editando) {
+        String dni = tfDni.getText();
+        String apellido = tfApellido.getText();
+        String nombre = tfNombre.getText();
+        String telefono = tfTelefono.getText();
+        String email = tfEmail.getText();
 
         if (editando) {
             Integer idClienteE = tablaClientes.getSelectionModel().getSelectedItem().getIdCliente();
-            String dni = tfDni.getText();
-            String apellido = tfApellido.getText();
-            String nombre = tfNombre.getText();
-            String telefono = tfTelefono.getText();
-            String email = tfEmail.getText();
-
-            Cliente c = new Cliente(idClienteE, dni, apellido, nombre, telefono, email);
-
-            return c;
+            return new Cliente(idClienteE, dni, apellido, nombre, telefono, email);
         } else {
-            Integer idCliente = dao.traerUltimoIdCliente() + 1;
-            String dni = tfDni.getText();
-            String apellido = tfApellido.getText();
-            String nombre = tfNombre.getText();
-            String telefono = tfTelefono.getText();
-            String email = tfEmail.getText();
-            Cliente c = new Cliente(idCliente, dni, apellido, nombre, telefono, email);
-            return c;
-
+            // Mandamos NULL en el ID para que Hibernate sepa que es nuevo
+            return new Cliente(null, dni, apellido, nombre, telefono, email);
         }
     }
 
@@ -552,7 +440,6 @@ public class GestionController implements Initializable {
 
         tablaClientes.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> setTablaServicios(newValue));
-
     }
 
     private boolean validarRegistrarServicio() {
@@ -561,43 +448,35 @@ public class GestionController implements Initializable {
             alert.setTitle("Atención");
             alert.setHeaderText("Campo fecha vacío");
             alert.setContentText("Por favor seleccione una fecha estimada en la que estará finalizado el servicio\n");
-
             alert.showAndWait();
             return false;
         }
         if (cmbTipo.getValue() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Atención");
-            alert.setHeaderText("Falta tipo servicio ");
+            alert.setHeaderText("Falta tipo servicio");
             alert.setContentText("Por favor seleccione el tipo de servicio de la nueva solicitud\n");
             return false;
         }
-
         return true;
     }
 
     @FXML
     private void onRegistrar(ActionEvent event) throws DocumentException {
-
         if (validarRegistrarServicio()) {
             if (tablaClientes.getSelectionModel().getSelectedItem() != null) {
-
                 if (nuevoServicioOk()) {
-
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Atención");
                     alert.setHeaderText("Se ha registrado un nuevo servicio correctamente");
                     alert.setContentText("");
-
                     alert.showAndWait();
                 }
-
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Atención");
                 alert.setHeaderText("No se ha seleccionado cliente");
                 alert.setContentText("Por favor seleccione al cliente que desea registrar una nueva solicitud");
-
                 alert.showAndWait();
             }
         } else {
@@ -605,27 +484,23 @@ public class GestionController implements Initializable {
             alert.setTitle("Atención");
             alert.setHeaderText("No ha sido posible registrar la nueva solicitud");
             alert.setContentText("Por favor revise los campos e intente nuevamente");
-
             alert.showAndWait();
-
         }
     }
 
     @FXML
     private void onImprimir(ActionEvent event) {
-        PDFUtil pdf = new PDFUtil();
+//        PDFUtil pdf = new PDFUtil();
         Servicio s = tablaServicios.getSelectionModel().getSelectedItem();
         if (s != null) {
-            if (daoServicio.getServicioById(s) != null) ;
-
-            pdf.mostrarReporte(s);
-
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Atención");
-            alert.setHeaderText("Reporte generado");
-            alert.setContentText("");
-
-            alert.showAndWait();
+            if (daoServicio.getServicioById(s) != null) {
+//                pdf.mostrarReporte(s);
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Atención");
+                alert.setHeaderText("Reporte generado");
+                alert.setContentText("");
+                alert.showAndWait();
+            }
         }
     }
 
@@ -633,10 +508,8 @@ public class GestionController implements Initializable {
     private void onEnviarEmail(ActionEvent event) {
     }
 
-    //SETEA EN LOS CAMPOS SEGUN EL CLIENTE SELECCIONADO DE LA TABLA
     private void setTextFieldsClientes(Cliente c) {
-
-        if (tablaClientes.getSelectionModel().getSelectedItem() != null) {
+        if (c != null) {
             labelIdCliente.setText(String.valueOf(c.getIdCliente()));
             tfDni.setText(c.getDni());
             tfApellido.setText(c.getApellido());
@@ -644,57 +517,48 @@ public class GestionController implements Initializable {
             tfTelefono.setText(c.getTelefono());
             tfEmail.setText(c.getEmail());
             btNuevoCliente.setDisable(true);
-
         }
-
     }
 
     private void setTablaServicios(Cliente c) {
         listaServicio.clear();
-        if (tablaClientes.getSelectionModel().getSelectedItem() != null) {
-            c = tablaClientes.getSelectionModel().getSelectedItem();
+        if (c != null) {
             listaServicio.addAll(daoServicio.buscarTodos(c));
             tablaServicios.setItems(listaServicio);
-
         }
-
     }
 
     private boolean eliminarServicio() {
         Servicio s = tablaServicios.getSelectionModel().getSelectedItem();
-
         if (daoServicio.eliminarServicioEstado(s)) {
             listaServicio.clear();
             tablaServicios.refresh();
+            return true;
         }
-
-        return true;
+        return false;
     }
 
     @FXML
     private void onEliminarServicio(ActionEvent event) {
-
         if (tablaServicios.getSelectionModel().getSelectedItem() == null) {
             Alert alerta = new Alert(Alert.AlertType.ERROR);
             alerta.setTitle("Atención");
             alerta.setHeaderText("No hay seleccionado ningún servicio de la tabla");
             alerta.setContentText("Por favor seleccione el servicio que desea eliminar");
-
             alerta.showAndWait();
         } else if (eliminarServicio()) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Atención");
             alert.setHeaderText("Se ha eliminado correctamente el servicio");
             alert.setContentText("");
-
             alert.showAndWait();
         } else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Atención");
             alert.setHeaderText("No se ha eliminado correctamente el servicio");
             alert.setContentText("");
+            alert.showAndWait();
         }
-
     }
 
     public Integer getEstadoServicio() {
@@ -715,7 +579,6 @@ public class GestionController implements Initializable {
     private void onServicioEntregado(ActionEvent event) {
         this.setEstadoServicio(3);
         onEditarServicioEstado(null);
-
     }
 
     public CheckBox getCheckReporteAuto() {
@@ -725,5 +588,4 @@ public class GestionController implements Initializable {
     public void setCheckReporteAuto(CheckBox checkReporteAuto) {
         this.checkReporteAuto = checkReporteAuto;
     }
-
 }

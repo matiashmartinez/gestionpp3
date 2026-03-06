@@ -15,12 +15,15 @@ module com.martinezmath.gestionpp {
     opens com.martinezmath.gestionpp3 to javafx.fxml;
     opens com.martinezmath.gestionpp3.vistas to javafx.fxml;
     opens com.martinezmath.gestionpp3.utils to javafx.fxml;
-    opens com.martinezmath.gestionpp3.modelo to javafx.base, javafx.fxml;
+    opens com.martinezmath.gestionpp3.modelo to javafx.base, javafx.fxml,org.hibernate.orm.core;
+    opens com.martinezmath.gestionpp3.conexion to org.hibernate.orm.core;
   
 
     // Exporta el paquete principal para que la JVM pueda lanzar la App
     exports com.martinezmath.gestionpp3;
     requires javafx.webEmpty;
     requires jakarta.persistence;
+    requires org.hibernate.orm.core; // <-- ¡Faltaba el motor principal!
+    requires java.naming;
     
 }

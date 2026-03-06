@@ -208,6 +208,7 @@
                     <include>**/*.png</include>
                     <include>**/*.css</include>
                     <include>**/*.properties</include>
+                    <include>**/*.xml</include>
                 </includes>
             </resource>
         </resources>

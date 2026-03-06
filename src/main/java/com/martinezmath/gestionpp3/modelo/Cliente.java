@@ -1,127 +1,117 @@
 package com.martinezmath.gestionpp3.modelo;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
+@Entity
+@Table(name = "cliente")
 public class Cliente {
 
-    private IntegerProperty idCliente;
-    private StringProperty dni;
-    private StringProperty nombre;
-    private StringProperty apellido;
-    private StringProperty telefono;
-    private StringProperty email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idcliente")
+    private Integer idCliente;
 
+    @Column(name = "dni")
+    private String dni;
+
+    @Column(name = "nombre")
+    private String nombre;
+
+    @Column(name = "apellido")
+    private String apellido;
+
+    @Column(name = "telefono")
+    private String telefono;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "baja")
+    private Integer baja = 0;
+
+    // Hibernate exige un constructor vacío
     public Cliente() {
     }
 
-    public Cliente(int idCliente, String dni, String apellido, String nombre) {
-        this.idCliente = new SimpleIntegerProperty(idCliente);
-        this.dni = new SimpleStringProperty(dni);
-        this.nombre = new SimpleStringProperty(nombre);
-        this.apellido = new SimpleStringProperty(apellido);
-    }
-
-    public Cliente(Integer idCliente, String dni, String apellido, String nombre, String telefono,
-            String email) {
-        this.idCliente = new SimpleIntegerProperty(idCliente);
-        this.dni = new SimpleStringProperty(dni);
-        this.nombre = new SimpleStringProperty(nombre);
-        this.apellido = new SimpleStringProperty(apellido);
-        this.telefono = new SimpleStringProperty(telefono);
-        this.email = new SimpleStringProperty(email);
+    // Constructor para búsquedas rápidas o creación
+    public Cliente(Integer idCliente, String dni, String apellido, String nombre, String telefono, String email) {
+        this.idCliente = idCliente;
+        this.dni = dni;
+        this.apellido = apellido;
+        this.nombre = nombre;
+        this.telefono = telefono;
+        this.email = email;
     }
 
     public Cliente(Integer idCliente) {
-        this.idCliente = new SimpleIntegerProperty(idCliente);
-
+        this.idCliente = idCliente;
     }
 
-//    Metodos atributo: idCliente
-    public int getIdCliente() {
-        return idCliente.get();
-    }
+    // --- GETTERS Y SETTERS ESTÁNDAR (Puros, sin Property) ---
 
-    public void setIdCliente(int idCliente) {
-        this.idCliente = new SimpleIntegerProperty(idCliente);
-    }
-
-    public IntegerProperty IdClienteProperty() {
+    public Integer getIdCliente() {
         return idCliente;
     }
-    //Metodos atributo: dni
+
+    public void setIdCliente(Integer idCliente) {
+        this.idCliente = idCliente;
+    }
 
     public String getDni() {
-        return dni.get();
-    }
-
-    public void setDni(String dni) {
-        this.dni = new SimpleStringProperty(dni);
-    }
-
-    public StringProperty DniProperty() {
         return dni;
     }
 
-    //Metodos atributo: nombre
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
     public String getNombre() {
-        return nombre.get();
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = new SimpleStringProperty(nombre);
-    }
-
-    public StringProperty NombreProperty() {
         return nombre;
     }
 
-    //Metodos atributo: apellido
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
     public String getApellido() {
-        return apellido.get();
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = new SimpleStringProperty(apellido);
-    }
-
-    public StringProperty ApellidoProperty() {
         return apellido;
     }
 
-    //Metodos atributo: telefono
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
     public String getTelefono() {
-        return telefono.get();
+        return telefono;
     }
 
     public void setTelefono(String telefono) {
-        this.telefono = new SimpleStringProperty(telefono);
+        this.telefono = telefono;
     }
-
-    public StringProperty TelefonoProperty() {
-        return telefono;
-    }
-    //Metodos atributo: email
 
     public String getEmail() {
-        return email.get();
+        return email;
     }
 
     public void setEmail(String email) {
-        this.email = new SimpleStringProperty(email);
+        this.email = email;
     }
 
-    public StringProperty EmailProperty() {
-        return email;
+    public Integer getBaja() {
+        return baja;
+    }
+
+    public void setBaja(Integer baja) {
+        this.baja = baja;
     }
 
     @Override
     public String toString() {
-        return this.getIdCliente() + this.getApellido() + this.getNombre() + this.getDni();
-
+        return this.idCliente + " - " + this.apellido + " " + this.nombre + " (DNI: " + this.dni + ")";
     }
-
 }

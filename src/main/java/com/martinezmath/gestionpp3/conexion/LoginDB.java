@@ -11,6 +11,9 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import pp3.st.modelo.Login;
 import com.martinezmath.gestionpp3.modelo.Usuario;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 /**
  *
@@ -19,146 +22,126 @@ import com.martinezmath.gestionpp3.modelo.Usuario;
 public class LoginDB {
 
     //recibe y verifica si es login correcto, login traido del controlador login, los cuales son obtenidos de los txtFields
-   public boolean validarLoginDB(Usuario usuario) {
-
-        String username = usuario.getUsername().trim();
-        String password = usuario.getPassword().trim();
-
-        System.out.println("Username traido: " + username);
-        System.out.println("Password cifrado a comparar: " + password);
-
-        // Usamos la tabla usuario y filtramos por username y baja=0 directamente en SQL
-        String query = "SELECT username, password, baja FROM usuario WHERE username = ? AND baja = 0";
+public boolean validarLoginDB(Usuario usuarioIngresado) {
         
-        ResultSet rs = null;
-        PreparedStatement statement = null;
+        System.out.println("Intentando login con Hibernate para: " + usuarioIngresado.getUsername());
+        
+        // 1. Pedimos una "sesión" a nuestra fábrica
+        EntityManager em = (EntityManager) Conexion.getEntityManager();
         
         try {
-            // Obtenemos la conexión directamente de tu clase Conexion centralizada
-            statement = Conexion.getConnection().prepareStatement(query);
-            statement.setString(1, username);
-            rs = statement.executeQuery();
-
-            // Usamos if(rs.next()) porque el username es UNIQUE, solo esperamos 1 o 0 resultados
-            if (rs.next()) {
-                String dbUsername = rs.getString("username");
-                String dbPassword = rs.getString("password");
-                
-                System.out.println("Valor username en DB: " + dbUsername);
-                System.out.println("Valor password en DB: " + dbPassword);
-                
-                // Comparamos lo que ingresó el usuario con lo que hay en la base de datos
-                if (dbUsername.equalsIgnoreCase(username) && dbPassword.equals(password)) {
-                    System.out.println("Correcto validar login");
-                    return true;
-                } else {
-                    System.out.println("Login incorrecto: La contraseña no coincide");
-                    return false;
-                }
-
-            } else {
-                System.out.println("Login incorrecto: El usuario no existe o está dado de baja");
-            }
+            // 2. Consulta JPQL. ¡Ojo aquí! Le consultamos a la CLASE Usuario, no a la tabla.
+            String jpql = "SELECT u FROM Usuario u WHERE u.username = :user AND u.password = :pass AND u.baja = 0";
             
-        } catch (SQLException ex) {
-            // Imprime la traza completa en rojo en la consola (Outputs) de NetBeans
-            ex.printStackTrace(); 
-            JOptionPane.showMessageDialog(null, "Error SQL al conectar: " + ex.getMessage(), "Error BD", JOptionPane.ERROR_MESSAGE);
+            TypedQuery<Usuario> query = em.createQuery(jpql, Usuario.class);
+            query.setParameter("user", usuarioIngresado.getUsername().trim());
+            query.setParameter("pass", usuarioIngresado.getPassword().trim());
+
+            // 3. Ejecutamos. getSingleResult() trae un objeto completo o lanza excepción si no hay coincidencias
+            Usuario usuarioEncontrado = query.getSingleResult();
+            
+            System.out.println("¡Acceso concedido a través de ORM! Rol: " + usuarioEncontrado.getRol());
+            return true;
+
+        } catch (NoResultException e) {
+            // Esta excepción es nativa de Hibernate: se dispara si la contraseña o el usuario están mal
+            System.out.println("Login incorrecto: Credenciales inválidas o usuario inactivo.");
+            return false;
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error en el servidor de base de datos: " + ex.getMessage());
+            return false;
+            
         } finally {
-            // Buenas prácticas: cerramos los recursos para no saturar MySQL
-            try {
-                if (rs != null) rs.close();
-                if (statement != null) statement.close();
-                Conexion.cierraConexion();
-            } catch (SQLException e) {
-                System.err.println("Error al cerrar recursos: " + e.getMessage());
+            // 4. SIEMPRE cerrar el EntityManager para liberar memoria
+            if (em != null && em.isOpen()) {
+                em.close();
             }
         }
-
-        return false;
     }
 
-    public boolean insertarLogin(Login l) {
-        String query = "INSERT INTO login (usuario, password, tipo "
-                + ") "
-                + "VALUES ('"
-                + l.getUsuario() + "', '"
-                + l.getPassword() + "',' "
-                + l.getTipo() + "',' "
-                + ")";
-
-        JdbcHelper jdbc = new JdbcHelper();
-        boolean exito = jdbc.ejecutarQuery(query);
-        return exito;
-    }
-
-    public boolean editarLogin(Login login) {
-
-        JdbcHelper jdbc = new JdbcHelper();
-
-        int id = login.getIdLogin();
-        String usuario = login.getUsuario();
-        String password = login.getPassword();
-        String tipo = login.getTipo();
-
-        String query = "UPDATE login SET "
-                + "usuario='" + usuario + "'"
-                + ",password='" + password + "'"
-                + ",tipo='" + tipo + "'"
-                + "WHERE idLogin=" + id
-                + ";";
-
-        boolean exito = jdbc.ejecutarQuery(query);
-
-        return exito;
-
-    }
-
-    public Login buscarLoginPorId(int idLogin) {
-
-        try {
-            String query = "SELECT * FROM login where idLogin =  " + idLogin;
-            JdbcHelper jdbc = new JdbcHelper();
-            ResultSet rs = jdbc.realizarConsulta(query);
-
-            while (rs.next()) {
-                if (idLogin == rs.getInt("idLogin")) {
-
-                    int id = rs.getInt("idLogin");
-                    String usuario = rs.getString("usuario");
-                    String password = rs.getString("password");
-                    String tipo = rs.getString("tipo");
-
-//                    int baja = rs.getInt("baja");
-                    Login login = new Login(id, usuario, password, tipo
-                    );
-
-                    System.out.println("Conexion cerrada");
-                    rs.close();
-
-                    return login;
-                }
-
-            }
-        } catch (SQLException ex) {
-            ex.getMessage();
-            System.out.println("Error al procesar con la bd");
-        }
-        return null;
-
-    }
-
-    public boolean eliminarLogin(int idLogin) {
-
-        JdbcHelper jdbc = new JdbcHelper();
-
-        String query = "UPDATE login SET baja=1 where idLogin = "
-                + idLogin;
-
-        boolean exito = jdbc.ejecutarQuery(query);
-
-        return exito;
-
-    }
+//    public boolean insertarLogin(Login l) {
+//        String query = "INSERT INTO login (usuario, password, tipo "
+//                + ") "
+//                + "VALUES ('"
+//                + l.getUsuario() + "', '"
+//                + l.getPassword() + "',' "
+//                + l.getTipo() + "',' "
+//                + ")";
+//
+//        JdbcHelper jdbc = new JdbcHelper();
+//        boolean exito = jdbc.ejecutarQuery(query);
+//        return exito;
+//    }
+//
+//    public boolean editarLogin(Login login) {
+//
+//        JdbcHelper jdbc = new JdbcHelper();
+//
+//        int id = login.getIdLogin();
+//        String usuario = login.getUsuario();
+//        String password = login.getPassword();
+//        String tipo = login.getTipo();
+//
+//        String query = "UPDATE login SET "
+//                + "usuario='" + usuario + "'"
+//                + ",password='" + password + "'"
+//                + ",tipo='" + tipo + "'"
+//                + "WHERE idLogin=" + id
+//                + ";";
+//
+//        boolean exito = jdbc.ejecutarQuery(query);
+//
+//        return exito;
+//
+//    }
+//
+//    public Login buscarLoginPorId(int idLogin) {
+//
+//        try {
+//            String query = "SELECT * FROM login where idLogin =  " + idLogin;
+//            JdbcHelper jdbc = new JdbcHelper();
+//            ResultSet rs = jdbc.realizarConsulta(query);
+//
+//            while (rs.next()) {
+//                if (idLogin == rs.getInt("idLogin")) {
+//
+//                    int id = rs.getInt("idLogin");
+//                    String usuario = rs.getString("usuario");
+//                    String password = rs.getString("password");
+//                    String tipo = rs.getString("tipo");
+//
+////                    int baja = rs.getInt("baja");
+//                    Login login = new Login(id, usuario, password, tipo
+//                    );
+//
+//                    System.out.println("Conexion cerrada");
+//                    rs.close();
+//
+//                    return login;
+//                }
+//
+//            }
+//        } catch (SQLException ex) {
+//            ex.getMessage();
+//            System.out.println("Error al procesar con la bd");
+//        }
+//        return null;
+//
+//    }
+//
+//    public boolean eliminarLogin(int idLogin) {
+//
+//        JdbcHelper jdbc = new JdbcHelper();
+//
+//        String query = "UPDATE login SET baja=1 where idLogin = "
+//                + idLogin;
+//
+//        boolean exito = jdbc.ejecutarQuery(query);
+//
+//        return exito;
+//
+//    }
 
 }

@@ -1,4 +1,3 @@
-
 package com.martinezmath.gestionpp3.conexion;
 
 import jakarta.persistence.EntityManager;
@@ -7,11 +6,26 @@ import jakarta.persistence.Persistence;
 
 public class Conexion {
     
-    // Lee el nombre exacto que pusimos en el persistence.xml
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("SmartHardPU");
+    private static EntityManagerFactory emf = null;
 
-    // Este método te dará la sesión de base de datos lista para usar
+    // Inicializamos el Factory en un bloque estático con un truco para JavaFX
+    static {
+        try {
+            // config especial por javafx
+            Thread.currentThread().setContextClassLoader(Conexion.class.getClassLoader());
+            
+            emf = Persistence.createEntityManagerFactory("SmartHardPU");
+            System.out.println("¡Hibernate conectado exitosamente!");
+        } catch (Exception e) {
+            System.err.println("Error crítico al iniciar Hibernate: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public static EntityManager getEntityManager() {
+        if (emf == null) {
+            throw new IllegalStateException("El EntityManagerFactory no se inicializó correctamente.");
+        }
         return emf.createEntityManager();
     }
 

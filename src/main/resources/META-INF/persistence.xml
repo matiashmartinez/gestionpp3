@@ -6,6 +6,12 @@
     <persistence-unit name="SmartHardPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         
+        <class>com.martinezmath.gestionpp3.modelo.Cliente</class>
+        <class>com.martinezmath.gestionpp3.modelo.Usuario</class>
+        <class>com.martinezmath.gestionpp3.modelo.Servicio</class>
+        <class>com.martinezmath.gestionpp3.modelo.TipoServicio</class>
+        <class>com.martinezmath.gestionpp3.modelo.Estado</class>
+        
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
             <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/pp3_final?serverTimezone=UTC" />

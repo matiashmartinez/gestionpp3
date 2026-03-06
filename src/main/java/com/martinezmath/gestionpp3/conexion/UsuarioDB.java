@@ -1,114 +1,81 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.martinezmath.gestionpp3.conexion;
 
 import com.martinezmath.gestionpp3.modelo.Usuario;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
+import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javax.swing.JOptionPane;
 
-
-/**
- *
- * @author Mati
- */
 public class UsuarioDB {
 
     public ObservableList<Usuario> buscarTodos() {
-        System.out.println("buscartodos usuarios");
+        EntityManager em = Conexion.getEntityManager();
         try {
-            String query = "SELECT * from usuario where baja=0";
-            JdbcHelper jdbc = new JdbcHelper();
-            ResultSet rs = jdbc.realizarConsulta(query);
-
-            ObservableList<Usuario> usuarios = FXCollections.observableArrayList();
-
-            try {
-                while (rs.next()) {
-                    Integer idUsuario = rs.getInt("idusuario");
-                    String username = rs.getString("username");
-                    String password = rs.getString("password");
-                    String rol = rs.getString("rol");
-                    String email = rs.getString("email");
-
-                    Usuario user = new Usuario(idUsuario, username, password, rol, email);
-                    usuarios.add(user);
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(null, "Error al buscar usuarios: " + ex.getMessage(),
-                        "Error", JOptionPane.ERROR_MESSAGE);
-            }
-            Conexion.getConnection().close();
-            Conexion.cierraConexion();
-            return usuarios;
-        } catch (SQLException ex) {
-            Logger.getLogger(ClienteDB.class.getName()).log(Level.SEVERE, null, ex);
+            // JPQL: Consultamos a la entidad 'Usuario' (la clase), no a la tabla
+            TypedQuery<Usuario> query = em.createQuery("SELECT u FROM Usuario u WHERE u.baja = 0", Usuario.class);
+            List<Usuario> lista = query.getResultList();
+            return FXCollections.observableArrayList(lista);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al buscar usuarios: " + e.getMessage());
+            return FXCollections.observableArrayList();
+        } finally {
+            em.close();
         }
-        return null;
     }
 
     public boolean insertarUsuario(Usuario u) {
-        String query = "INSERT INTO usuario (idusuario,username, password, rol,email, baja "
-                + ") "
-                + "VALUES ("
-                + 0 + ", '"
-                + u.getUsername() + "', '"
-                + u.getPassword() + "',' "
-                + u.getRol() + "','"
-                + u.getEmail() + " ', "
-                + 0 + " "
-                + ")";
-
-        JdbcHelper jdbc = new JdbcHelper();
-        boolean exito = jdbc.ejecutarQuery(query);
-        return exito;
+        EntityManager em = Conexion.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.persist(u); // Hibernate genera el INSERT automáticamente
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            e.printStackTrace();
+            return false;
+        } finally {
+            em.close();
+        }
     }
 
     public boolean editarUsuario(Usuario usuario) {
-        System.out.println("Editando usuario bd");
-
-        JdbcHelper jdbc = new JdbcHelper();
-
-        int id = usuario.getIdUsuario();
-        String username = usuario.getUsername();
-        String password = usuario.getPassword();
-        String rol = usuario.getRol();
-        String email = usuario.getEmail();
-
-        String query = "UPDATE usuario SET "
-                + "username=' " + username + " ' "
-                + ",password=' " + password + " ' "
-                + ",rol=' " + rol + "'"
-                + ",email=' " + email + " ' "
-                + " WHERE idcliente=" + id
-                + ";";
-
-        boolean exito = jdbc.ejecutarQuery(query);
-        Conexion.cierraConexion();
-        return exito;
-
+        EntityManager em = Conexion.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            em.merge(usuario); // Hibernate genera el UPDATE comparando los campos
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            return false;
+        } finally {
+            em.close();
+        }
     }
 
     public boolean bajaUsuario(Usuario usuario) {
-        System.out.println("Editando usuario bd" + (usuario.getIdUsuario()));
-
-        JdbcHelper jdbc = new JdbcHelper();
-
-        int id = usuario.getIdUsuario();
-
-        String query = "UPDATE usuario SET baja=1 "
-                + " WHERE idusuario=" + id
-                + ";";
-
-        boolean exito = jdbc.ejecutarQuery(query);
-        Conexion.cierraConexion();
-        return exito;
-
+        EntityManager em = Conexion.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            // Buscamos el usuario en este contexto de persistencia para modificarlo
+            Usuario u = em.find(Usuario.class, usuario.getIdUsuario());
+            if (u != null) {
+                u.setBaja(1); // Marcamos la baja lógica
+            }
+            tx.commit();
+            return true;
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            return false;
+        } finally {
+            em.close();
+        }
     }
 }
