@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="1200.0" minHeight="-Infinity" minWidth="1200.0" prefHeight="400.0" prefWidth="1201.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pp3.st.vistas.PrincipalController">
+   <top>
+      <MenuBar styleClass="titulo" stylesheets="@../recursos/styles/LoginStyle.css" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Sistema">
+            <items>
+                  <MenuItem fx:id="menuItemPrincipal" mnemonicParsing="false" onAction="#onMostrarScenePrincipal" text="Home" />
+              <MenuItem fx:id="menuItemUsuarios" mnemonicParsing="false" onAction="#onMostrarModalUsuarios" text="Usuarios" />
+                  <MenuItem mnemonicParsing="false" text="Salir" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Servicios Técnicos">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onMostrarSceneGestionar" text="Gestionar" />
+               </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Reportes">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#openPDF" text="Cargar PDF" />
+                  <MenuItem mnemonicParsing="false" onAction="#imprimir" text="Imprimir" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Ayuda">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <stylesheets>
+      <URL value="@../recursos/styles/nuevo1.css" />
+      <URL value="@../recursos/styles/nuevo1.css" />
+   </stylesheets>
+</BorderPane>
